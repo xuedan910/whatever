@@ -101,8 +101,11 @@
                 </tab>
             </tabs>
 
-            <coupon @applied="apply()"></coupon>
+            <coupon></coupon>
             <p v-if='aa'>Your coupon is applied</p>
+
+            <modal v-show='showModal' @close='showModal=false'></modal>
+            <button @click="showModal=true">click me</button>
         </div>
         <!--****** flip card ******-->
         <!-- <div id="card">
@@ -121,16 +124,12 @@
 	        </div>
         </div>
 
-        <div class="modal">
-            <div class="modal-background"></div>
-            <div class="modal-content">
-                Chromebooks are automatically kept up to date, so you’ll always have the latest virus protection, along with the latest features like Voice Search. Best of all, your Chromebook won’t slow down over time.
-            </div>
-            <button class="modal-close is-large"></button>
-        </div>
+        
+        
     </body>
     
     <script>
+        var obj = new Vue();
         Vue.component('tabs',{
             template:`
                 <div>
@@ -158,7 +157,6 @@
                 }
             }
         });
-
         Vue.component('tab',{
             template:"<div v-show='this.isActive'><slot></slot></div>",
             props:{
@@ -175,21 +173,48 @@
             template:'<input placeholder="enter your coupon code" @blur="couponApply()">',
             methods:{
                 couponApply:function(){
-                    this.$emit('applied');
+                    obj.$emit('applied');
                 }
             },
+        });
+        Vue.component('modal',{
+            template:`
+                <div class="modal is-active">
+                    <div class="modal-background"></div>
+                    <div class="modal-content">
+                        <p style="color: white;">Here is some content!</p>
+                    </div>
+                    <button class="modal-close is-large" @click="close()"></button>
+                </div>
+            `,
+            methods:{
+                close:function(){
+                    this.$emit('close');
+                }
+            }
         });
 
         var app = new Vue({
             el:'.test',
             data:{
-                aa:false
+                aa:false,
+                showModal:false
             },
             methods:{
                 apply:function(){
                     this.aa = true
-                }
+                },
+            },
+            created(){
+                obj.$on('applied',function(){
+                    alert();
+                });
             }
+            // created:{
+            //     obj.$on('applied',function(){
+            //         alert();
+            //     });
+            // }
         });
 
         $(function(){
