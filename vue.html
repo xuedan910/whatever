@@ -1,0 +1,204 @@
+<html>
+    <head>
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.4.2/css/bulma.css">
+        <script src="https://unpkg.com/vue"></script>
+        <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+        <style type="text/css">
+            *{margin:0;padding: 0;}
+            #card{
+            	text-align: center;
+            }
+            .side{
+            	width: 200px;
+            	padding: 90px 0px;
+            	position: absolute;
+            	transition: all 2s;
+            }
+            .side-front{
+            	z-index: 5;
+            	background-color: #e9686b;
+            	backface-visibility: hidden;
+            	transform: rotateY(0deg);
+            }
+            .side-back{
+            	background-color: brown;
+            	transform: rotateY(180deg);
+            }
+            #card:hover .side-front{
+            	transform: rotateY(180deg);
+            }
+            #card:hover .side-back{
+            	transform: rotateY(0deg);
+            }
+
+            #stage{
+            	margin:0 auto;
+            	position: relative;
+            }
+            #cube{
+            	cursor: pointer;
+            	position: absolute;
+            	width: 300px;
+            	height: 300px;
+            	left: 50%;
+            	top: 50%;
+            	transform-style: preserve-3d;
+            	animation: turn 20s ease infinite;
+            }
+            #cube div{
+            	width: 300px;
+            	height: 300px;
+            	line-height: 300px;
+            	border:1px solid black;
+            	background-color: #e9686b;
+            	opacity: 0.6;
+            	position: absolute;
+            	text-align: center;
+            	font-size: 50px;
+            	color: white;
+            }
+            #one{
+            	transform: translateZ(150px);
+            }
+            #two{
+            	transform: rotateX(90deg) translateZ(150px);
+            }
+            #three{
+            	transform: translateZ(-150px);
+            }
+            #four{
+            	transform: rotateX(90deg) translateZ(-150px);
+            }
+            #five{
+            	transform: rotateY(90deg) translateZ(150px);
+            }
+            #six{
+            	transform: rotateY(90deg) translateZ(-150px);
+            }
+
+            
+            @keyframes turn{
+            	50%{
+            		transform: rotateY(360deg) rotateX(360deg);
+            	}
+            	100%{
+            		transform: rotateY(-360deg) rotateX(-360deg);
+            	}
+            }
+        </style>
+    </head>
+    <body>
+        <div class="test" style="padding: 20px;">
+            <tabs>
+                <tab name="About Us" selected="true">
+                    <h1>Here is the content for us</h1>
+                </tab>
+                <tab name="About Our Culture">
+                    <h1>Here is the content for our culture</h1>
+                </tab>
+                <tab name="About Our Vision">
+                    <h1>Here is the content for our vision</h1>
+                </tab>
+            </tabs>
+
+            <coupon @applied="apply()"></coupon>
+            <p v-if='aa'>Your coupon is applied</p>
+        </div>
+        <!--****** flip card ******-->
+        <!-- <div id="card">
+        	<div class="side side-front">Side A</div>
+        	<div class="side side-back">Side B</div>
+        </div> -->
+        <!--****** rotating cubic ******-->
+        <div id="stage">
+        	<div id="cube">
+	        	<div id="one">1</div>
+	        	<div id="two">2</div>
+	        	<div id="three">3</div>
+	        	<div id="four">4</div>
+	        	<div id="five">5</div>
+	        	<div id="six">6</div>
+	        </div>
+        </div>
+
+        <div class="modal">
+            <div class="modal-background"></div>
+            <div class="modal-content">
+                Chromebooks are automatically kept up to date, so you’ll always have the latest virus protection, along with the latest features like Voice Search. Best of all, your Chromebook won’t slow down over time.
+            </div>
+            <button class="modal-close is-large"></button>
+        </div>
+    </body>
+    
+    <script>
+        Vue.component('tabs',{
+            template:`
+                <div>
+                    <div class="tabs">
+                        <ul>
+                            <li v-for="child in children" :class="{ 'is-active':child.isActive }"><a href="#" @click="switchTab(child)">{{ child.name }}</a></li>
+                        </ul>
+                    </div>
+
+                    <div>
+                        <slot></slot>
+                    </div>
+                </div>
+            `,
+            data:function(){
+                return {
+                    children:this.$children
+                }
+            },
+            methods:{
+                switchTab:function(obj){
+                    this.$children.forEach(tab => {
+                        tab.isActive = (tab.name == obj.name);
+                    });
+                }
+            }
+        });
+
+        Vue.component('tab',{
+            template:"<div v-show='this.isActive'><slot></slot></div>",
+            props:{
+                name:{ required:true },
+                selected:{ default:false }
+            },
+            data:function(){
+                return {
+                    isActive:this.selected
+                }
+            }
+        });
+        Vue.component('coupon',{
+            template:'<input placeholder="enter your coupon code" @blur="couponApply()">',
+            methods:{
+                couponApply:function(){
+                    this.$emit('applied');
+                }
+            },
+        });
+
+        var app = new Vue({
+            el:'.test',
+            data:{
+                aa:false
+            },
+            methods:{
+                apply:function(){
+                    this.aa = true
+                }
+            }
+        });
+
+        $(function(){
+	    	$('#cube').mouseover(function(){
+	    		$(this).css('animation-play-state','paused');
+	    	});
+	    	$('#cube').mouseleave(function(){
+	    		$(this).css('animation-play-state','running');
+	    	});
+	    });
+    </script>
+</html>
